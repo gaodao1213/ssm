@@ -2,6 +2,7 @@ package com.soecode.lyf.com.mybatis;
 
 import com.dianping.cat.Cat;
 import com.dianping.cat.CatConstants;
+import com.dianping.cat.message.Message;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -36,16 +37,26 @@ public class CatMybatisInterceptor implements Interceptor {
         String datasourceUrl = properties.getProperty("datasourceUrl");
 
         MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
-
+        //得到 类名-方法
+        String[] strArr = mappedStatement.getId().split("\\.");
+        String class_method = strArr[strArr.length-2] + "." + strArr[strArr.length-1];
+        //得到sql语句
+        Object parameter = null;
+        if(invocation.getArgs().length > 1){
+            parameter = invocation.getArgs()[1];
+        }
+        BoundSql boundSql = mappedStatement.getBoundSql(parameter);
+        Configuration configuration = mappedStatement.getConfiguration();
+        String sql = showSql(configuration, boundSql);
         String sqlId = mappedStatement.getId();
-
         com.dianping.cat.message.Transaction t = Cat.newTransaction(CatConstants.TYPE_SQL, sqlId+System.currentTimeMillis());
         Cat.logEvent("SQL.Database", datasourceUrl);
         Cat.logEvent("SQL.Method", invocation.getMethod().getName());
+        Cat.logEvent("SQL.Statement", sql.substring(0, sql.indexOf(" ")), Message.SUCCESS, sql);
+        Object returnValue = null;
         try {
-            Object returnValue = invocation.proceed();
+            returnValue = invocation.proceed();
             t.setStatus(com.dianping.cat.message.Transaction.SUCCESS);
-            return returnValue;
         } catch (Throwable e) {
             Cat.logError(e);
             t.setStatus(e);
@@ -53,6 +64,7 @@ public class CatMybatisInterceptor implements Interceptor {
         }finally{
             t.complete();
         }
+        return returnValue;
 
     }
 

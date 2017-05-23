@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -60,44 +61,86 @@ public class BookController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value="/jsonr")
-	public Map testJson(HttpServletRequest request, HttpServletResponse response){
-		String url = this.getClass().getName();
-		String method = "jsonr-testJson1";
-		Transaction t = Cat.newTransaction(url, method+System.currentTimeMillis());
-		Cat.logEvent("testJson","testJsonname");
-		Cat.logMetricForSum("jsonCount",2);
-		//Cat.logMetricForCount("jsonCount",2);
-
-		Cat.logMetricForDuration("batCount",6000);
-		//Cat.logHeartbeat();
-		t.addData("data",System.currentTimeMillis());
+	@RequestMapping(value="/transaction")
+	public Map testTranaction(HttpServletRequest request, HttpServletResponse response){
 		Map map = new HashMap<>();
-		map.put("code",0);
-		map.put("dataMap","dmap");
-		map.put("msg","success");
-		t.setStatus(Message.SUCCESS);
-		t.complete();
+		String type = "transactionTest";
+		String name = "testname1";
+		String testType = request.getParameter("type");
+		Transaction t = Cat.newTransaction(type,name);
+		try{
+			t.addData("transactionDataKey","transactonDataValue");
+			if(!StringUtils.isEmpty(testType)){
+				int b = 88/0;
+			}
+			map.put("code",0);
+			map.put("dataMap","dmap");
+			map.put("msg","success");
+			t.setStatus(Message.SUCCESS);
+		}catch (Exception e){
+			t.setStatus(e);
+			Cat.logError(e);
+		}finally {
+			t.complete();
+		}
 		return map;
 	}
 
 	@ResponseBody
-	@RequestMapping(value="/jsonr2")
-	public Map testJson2(HttpServletRequest request, HttpServletResponse response){
-		String url = "myTest";
-		String method = "heartbeat";
-		Transaction t = Cat.newTransaction(url, method+System.currentTimeMillis());
-		Cat.logEvent("testJson","testJsonname");
-		Cat.newHeartbeat("testHearbeat","jsonr2");
-		//Cat.logHeartbeat("testHearbeat","jsonr2",Message.SUCCESS, "NewGc Count=&OldGc Count=");
-		//Cat.logHeartbeat();
-		t.addData("data",System.currentTimeMillis());
+	@RequestMapping(value="/event")
+	public Map testEvent(HttpServletRequest request, HttpServletResponse response){
 		Map map = new HashMap<>();
-		map.put("code",0);
-		map.put("dataMap","dmap");
-		map.put("msg","success");
-		t.setStatus(Message.SUCCESS);
-		t.complete();
+		String type = "transactionEvent";
+		String name = "transactionEventName";
+		String testType = request.getParameter("type");
+		Transaction t = Cat.newTransaction(type,name);
+		try{
+			t.addData("transactionDataKey","transactonDataValue");
+			if(!StringUtils.isEmpty(testType)){
+				int b = 88/0;
+			}
+			map.put("code",0);
+			map.put("dataMap","dmap");
+			map.put("msg","success");
+			Cat.logEvent("eventTest","eventTestName");
+			t.setStatus(Message.SUCCESS);
+		}catch (Exception e){
+			t.setStatus(e);
+			Cat.logError(e);
+		}finally {
+			t.complete();
+		}
+		return map;
+	}
+
+	@ResponseBody
+	@RequestMapping(value="/metric")
+	public Map testMetric(HttpServletRequest request, HttpServletResponse response){
+		Map map = new HashMap<>();
+		String type = "transactionMetric";
+		String name = "transactionMetricName";
+		String testType = request.getParameter("type");
+		Transaction t = Cat.newTransaction(type,name);
+		try{
+			t.addData("transactionDataKey","transactonDataValue");
+			if(!StringUtils.isEmpty(testType) && "sum".equals(testType)){
+				Cat.logMetricForSum("totalCount",3);
+			}else if(!StringUtils.isEmpty(testType) && "count".equals(testType)){
+				Cat.logMetricForCount("totalCount",2);
+			}else{
+				Cat.logMetricForCount("totalCount",1);
+			}
+			map.put("code",0);
+			map.put("dataMap","dmap");
+			map.put("msg","success");
+			Cat.logEvent("eventTest","eventTestName");
+			t.setStatus(Message.SUCCESS);
+		}catch (Exception e){
+			t.setStatus(e);
+			Cat.logError(e);
+		}finally {
+			t.complete();
+		}
 		return map;
 	}
 	// ajax json
