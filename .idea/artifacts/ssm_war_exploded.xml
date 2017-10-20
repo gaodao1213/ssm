@@ -41,16 +41,7 @@
           <element id="library" level="project" name="Maven: com.dyuproject.protostuff:protostuff-runtime:1.0.8" />
           <element id="library" level="project" name="Maven: com.dyuproject.protostuff:protostuff-collectionschema:1.0.8" />
           <element id="library" level="project" name="Maven: commons-collections:commons-collections:3.2" />
-          <element id="library" level="project" name="Maven: com.dianping.cat:cat-client:1.4.0" />
-          <element id="library" level="project" name="Maven: org.unidal.framework:foundation-service:2.5.0" />
-          <element id="library" level="project" name="Maven: org.codehaus.plexus:plexus-container-default:1.6" />
-          <element id="library" level="project" name="Maven: org.codehaus.plexus:plexus-classworlds:2.5.1" />
-          <element id="library" level="project" name="Maven: org.apache.xbean:xbean-reflect:3.7" />
-          <element id="library" level="project" name="Maven: com.google.guava:guava:19.0" />
-          <element id="library" level="project" name="Maven: org.codehaus.plexus:plexus-utils:3.0.24" />
-          <element id="library" level="project" name="Maven: org.aspectj:aspectjrt:1.5.4" />
-          <element id="library" level="project" name="Maven: io.netty:netty-all:4.0.24.Final" />
-          <element id="library" level="project" name="Maven: com.google.code.gson:gson:1.6" />
+          <element id="library" level="project" name="Maven: com.alibaba:fastjson:1.2.31" />
         </element>
       </element>
       <element id="directory" name="META-INF">

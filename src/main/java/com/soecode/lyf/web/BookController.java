@@ -1,9 +1,5 @@
 package com.soecode.lyf.web;
 
-import com.dianping.cat.Cat;
-import com.dianping.cat.message.Heartbeat;
-import com.dianping.cat.message.Message;
-import com.dianping.cat.message.Transaction;
 import com.soecode.lyf.dto.AppointExecution;
 import com.soecode.lyf.dto.Result;
 import com.soecode.lyf.entity.Book;
@@ -25,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,88 +58,41 @@ public class BookController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value="/transaction")
+	@RequestMapping(value="/id")
 	public Map testTranaction(HttpServletRequest request, HttpServletResponse response){
 		Map map = new HashMap<>();
-		String type = "transactionTest";
-		String name = "testname1";
-		String testType = request.getParameter("type");
-		Transaction t = Cat.newTransaction(type,name);
-		try{
-			t.addData("transactionDataKey","transactonDataValue");
-			if(!StringUtils.isEmpty(testType)){
-				int b = 88/0;
-			}
-			map.put("code",0);
-			map.put("dataMap","dmap");
-			map.put("msg","success");
-			t.setStatus(Message.SUCCESS);
-		}catch (Exception e){
-			t.setStatus(e);
-			Cat.logError(e);
-		}finally {
-			t.complete();
+		String type=request.getParameter("type");
+		int typeInt = Integer.parseInt(type);
+		if(typeInt<10){
+			map.put("minid","0");
+			map.put("maxid",""+(typeInt*100));
+		}else if(typeInt>10&&typeInt<13){
+			map.put("error","wait a miniute");
 		}
 		return map;
 	}
 
 	@ResponseBody
-	@RequestMapping(value="/event")
-	public Map testEvent(HttpServletRequest request, HttpServletResponse response){
+	@RequestMapping(value="/data/{id}")
+	public Map testTranaction(HttpServletRequest request, HttpServletResponse response,@PathVariable("id") int id){
 		Map map = new HashMap<>();
-		String type = "transactionEvent";
-		String name = "transactionEventName";
-		String testType = request.getParameter("type");
-		Transaction t = Cat.newTransaction(type,name);
-		try{
-			t.addData("transactionDataKey","transactonDataValue");
-			if(!StringUtils.isEmpty(testType)){
-				int b = 88/0;
+		List<Map> list = new ArrayList<>();
+		if(id<1000){
+			for(int i=0;i<100;i++){
+				Map m = new HashMap();
+				m.put("id",i);
+				m.put("name","444");
+				list.add(m);
 			}
-			map.put("code",0);
-			map.put("dataMap","dmap");
-			map.put("msg","success");
-			Cat.logEvent("eventTest","eventTestName");
-			t.setStatus(Message.SUCCESS);
-		}catch (Exception e){
-			t.setStatus(e);
-			Cat.logError(e);
-		}finally {
-			t.complete();
+			map.put("biz",list);
+		}else if(id>1200&& id<1500){
+			map.put("error","wait a miniute");
 		}
+
 		return map;
 	}
 
-	@ResponseBody
-	@RequestMapping(value="/metric")
-	public Map testMetric(HttpServletRequest request, HttpServletResponse response){
-		Map map = new HashMap<>();
-		String type = "transactionMetric";
-		String name = "transactionMetricName";
-		String testType = request.getParameter("type");
-		Transaction t = Cat.newTransaction(type,name);
-		try{
-			t.addData("transactionDataKey","transactonDataValue");
-			if(!StringUtils.isEmpty(testType) && "sum".equals(testType)){
-				Cat.logMetricForSum("totalCount",3);
-			}else if(!StringUtils.isEmpty(testType) && "count".equals(testType)){
-				Cat.logMetricForCount("totalCount",2);
-			}else{
-				Cat.logMetricForCount("totalCount",1);
-			}
-			map.put("code",0);
-			map.put("dataMap","dmap");
-			map.put("msg","success");
-			Cat.logEvent("eventTest","eventTestName");
-			t.setStatus(Message.SUCCESS);
-		}catch (Exception e){
-			t.setStatus(e);
-			Cat.logError(e);
-		}finally {
-			t.complete();
-		}
-		return map;
-	}
+
 	// ajax json
 	@RequestMapping(value = "/{bookId}/appoint", method = RequestMethod.POST, produces = {
 			"application/json; charset=utf-8" })

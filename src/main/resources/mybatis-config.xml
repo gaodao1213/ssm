@@ -16,11 +16,6 @@
 		<setting name="mapUnderscoreToCamelCase" value="true" />
 
 	</settings>
-	<!-- mybatis集成cat-->
-	<plugins>
-		<plugin interceptor="com.soecode.lyf.com.mybatis.CatMybatisInterceptor">
-			<property name="datasourceUrl" value="jdbc:mysql://localhost:3306/ssm"/>
-		</plugin>
-	</plugins>
+
 
 </configuration>
